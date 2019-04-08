@@ -73,3 +73,35 @@ df_deaths %>%
   labs(x = "Book", y = "Count", title = "Sankey Diagram of Game of Thrones Series' Deaths",
        subtitle = "Chart indicates cumulative deaths over time")
 
+### Add houses
+### Still a work in progress! :)
+
+df_deaths %>%
+  filter(Allegiances %in% houses) %>%
+  group_by(Book_Death, Allegiances) %>%
+  summarise(Dead = n()) %>%
+  right_join(
+    df_deaths %>%
+      filter(Allegiances %in% houses) %>%
+      select(Book_Death, Allegiances) %>%
+      unique() %>%
+      expand(Book_Death, Allegiances),
+    by = c("Book_Death", "Allegiances")) %>%
+  group_by(Allegiances) %>%
+  mutate(Dead = ifelse(is.na(Dead), 0, Dead),
+         Alive = sum(Dead) - cumsum(Dead),
+         Dead = cumsum(Dead)) %>%
+  filter(Book_Death != "The Winds of Winter") %>%
+  gather(Event, Count, -Book_Death, -Allegiances) %>%
+  ggplot(aes(fill  = Event, x = Book_Death, y = Count, stratum = Event, alluvium = Event, label = Event)) +
+  geom_flow(stat = "alluvium", lode.guidance = "rightleft",
+            color = "darkgray") +
+  geom_stratum() + 
+  theme_classic() +
+  facet_grid(Allegiances~.) +
+  #geom_image(aes(image = book_image), size = 0.1, y = 800) +
+  scale_fill_manual(values = c("light blue", "salmon")) +
+  labs(x = "Book", y = "Count", title = "Sankey Diagram of Game of Thrones Series' Deaths",
+       subtitle = "Chart indicates cumulative deaths over time")
+
+
