@@ -5,8 +5,6 @@
 
 ### Data sourced from: https://www.kaggle.com/mylesoneill/game-of-thrones
 
-setwd("[Working directory here]") # Update working directory as needed
-
 library(tidyverse)
 library(ggalluvial)
 library(ggimage)
@@ -51,6 +49,8 @@ houses <- df_deaths %>%
   select(Allegiances) %>%
   unlist()
 
+## First chart
+
 df_deaths %>%
   group_by(Book_Death) %>%
   summarise(Dead = n()) %>%
@@ -68,7 +68,8 @@ df_deaths %>%
             color = "darkgray") +
   geom_stratum() + 
   theme_classic() +
-  geom_image(aes(image = book_image), size = 0.1, y = 800) +
+  #geom_image(aes(image = book_image), size = 0.1, y = 800) +
   scale_fill_manual(values = c("light blue", "salmon")) +
   labs(x = "Book", y = "Count", title = "Sankey Diagram of Game of Thrones Series' Deaths",
        subtitle = "Chart indicates cumulative deaths over time")
+
