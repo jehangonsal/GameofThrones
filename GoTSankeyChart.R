@@ -93,13 +93,16 @@ df_deaths %>%
          Dead = cumsum(Dead)) %>%
   filter(Book_Death != "The Winds of Winter") %>%
   gather(Event, Count, -Book_Death, -Allegiances) %>%
+  mutate(key_events = case_when(Allegiances == "Targaryen" &
+                                  Book_Death == "A Game of Thrones" &
+                                  Event == "Alive" ~ "https://vignette.wikia.nocookie.net/gameofthrones/images/1/1c/Daenerys_and_dragon.jpg/revision/latest/scale-to-width-down/205?cb=20160718051855")) %>%
   ggplot(aes(fill  = Event, x = Book_Death, y = Count, stratum = Event, alluvium = Event, label = Event)) +
   geom_flow(stat = "alluvium", lode.guidance = "rightleft",
             color = "darkgray") +
   geom_stratum() + 
   theme_classic() +
   facet_grid(Allegiances~.) +
-  #geom_image(aes(image = book_image), size = 0.1, y = 800) +
+  geom_image(aes(image = key_events), size = 0.2, na.rm = TRUE, by = "height") +
   scale_fill_manual(values = c("light blue", "salmon")) +
   labs(x = "Book", y = "Count", title = "Sankey Diagram of Game of Thrones Series' Deaths",
        subtitle = "Chart indicates cumulative deaths over time")
